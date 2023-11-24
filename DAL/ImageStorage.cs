@@ -1,4 +1,5 @@
-﻿using Azure.Core;
+﻿using Azure;
+using Azure.Core;
 using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
@@ -134,6 +135,22 @@ namespace ImageSharingWithCloud.DAL
         {
             image.Id = Guid.NewGuid().ToString();
             // TODO
+            try
+            {
+                // Create a new item in the Cosmos DB container
+                await imageDbContainer.CreateItemAsync(image, new PartitionKey(image.UserId));
+                return image.Id; // Return the image ID after successful save
+            }
+            catch (CosmosException ex)
+            {
+                logger.LogError($"Cosmos DB error occurred: {ex.Message}");
+                return null; // In case of error, return null or handle as needed
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"An error occurred: {ex.Message}");
+                return null; // In case of any other exception, return null or handle as needed
+            }
             return null;
 
         }
@@ -165,11 +182,40 @@ namespace ImageSharingWithCloud.DAL
         public async Task<IList<Image>> GetImageInfoByUserAsync(ApplicationUser user)
         {
             List<Image> results = new List<Image>();
-            var query = imageDbContainer.GetItemLinqQueryable<Image>()
-                                        .WithPartitionKey<Image>(user.Id)
-                                        .Where(im => im.Valid && im.Approved);
+           // var query = imageDbContainer.GetItemLinqQueryable<Image>()
+              //                          .WithPartitionKey<Image>(user.Id)
+                            //            .Where(im => im.Valid && im.Approved);
             // TODO complete this
+            try
+            {
+                var query = imageDbContainer.GetItemLinqQueryable<Image>()
+                                            .WithPartitionKey<Image>(user.Id)
+                                            .Where(im => im.Valid && im.Approved)
+                                            .ToFeedIterator();
 
+                // Iterate over the query results
+                while (query.HasMoreResults)
+                {
+                    var response = await query.ReadNextAsync();
+                    foreach (var image in response)
+                    {
+                        if(image.UserId== user.Id)
+                        results.Add(image);
+                    }
+                }
+            }
+            catch (CosmosException ex)
+            {
+                logger.LogError($"Cosmos DB error occurred: {ex.Message}");
+                // Handle the exception as needed, possibly rethrow or return an empty list
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"An error occurred: {ex.Message}");
+                // Handle the exception as needed, possibly rethrow or return an empty list
+            }
+
+            
             return results;
         }
 
@@ -239,6 +285,37 @@ namespace ImageSharingWithCloud.DAL
              * Tip: You need to reset the stream position to the beginning before uploading:
              * See https://stackoverflow.com/a/47611795.
              */
+
+            logger.LogInformation($"Saving image with id {imageId} to blob storage");
+
+            BlobClient blobClient = blobContainerClient.GetBlobClient(BlobName(userId, imageId));
+
+           
+
+            try
+            {
+                // Reset the stream position to the beginning before uploading
+                if (imageFile.Length > 0)
+                {
+                    imageFile.OpenReadStream().Position = 0;
+                    await blobClient.UploadAsync(imageFile.OpenReadStream(), headers);
+                    logger.LogInformation($"Image {imageId} uploaded successfully.");
+                }
+                else
+                {
+                    logger.LogWarning($"Empty file received for image {imageId}.");
+                }
+            }
+            catch (RequestFailedException ex)
+            {
+                logger.LogError($"Azure Blob Storage error occurred while uploading: {ex.Message}");
+                // Handle exception as needed, possibly rethrow or log the error
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"An error occurred while uploading the image: {ex.Message}");
+                // Handle general exceptions
+            }
 
         }
 

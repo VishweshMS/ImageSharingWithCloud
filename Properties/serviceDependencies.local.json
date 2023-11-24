@@ -3,6 +3,12 @@
     "mssql1": {
       "type": "mssql.local",
       "connectionId": "ConnectionStrings:DefaultConnection"
+    },
+    "storage1": {
+      "secretStore": "LocalSecretsFile",
+      "type": "storage.emulator",
+      "connectionId": "StorageConnectionString",
+      "dynamicId": null
     }
   }
 }

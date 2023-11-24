@@ -9,7 +9,8 @@ using Microsoft.Extensions.Azure;
 using System;
 using System.Configuration;
 using Microsoft.AspNetCore.Identity;
-
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,9 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
  * Add services to the container.
  */
 builder.Services.AddControllersWithViews();
-
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+        .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddDefaultTokenProviders();
 /*
  * Configure cookie policy to allow ADA saved in a cookie.
  */

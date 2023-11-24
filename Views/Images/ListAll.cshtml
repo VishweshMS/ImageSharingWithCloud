@@ -25,10 +25,12 @@
             <td>
                 <a asp-action="Details" asp-route-userid="@image.UserId" asp-route-id="@image.Id">Details</a>
 
-                @if (ViewBag.UserId.Equals(image.UserId))
+                @if (ViewBag.UserName.Equals(image.UserName, StringComparison.OrdinalIgnoreCase))
                 {
                     <text>
                         <!-- TODO add Edit and Delete links -->
+                @Html.ActionLink("Edit", "Edit", new { UserId=image.UserId,Id = image.Id })
+                        @Html.ActionLink("Delete", "Delete", new { UserId=image.UserId, Id = image.Id })
                     </text>
                 }
             </td>

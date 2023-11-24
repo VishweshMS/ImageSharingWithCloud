@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Azure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace ImageSharingWithCloud.Controllers
 {
@@ -71,20 +73,47 @@ namespace ImageSharingWithCloud.Controllers
 
             logger.LogDebug("....saving image metadata in the database....");
 
-            string imageId = null;
 
             // TODO save image metadata in the database 
 
-            
-            // end TODO
+            // TODO save image metadata in the database 
+            Image image = new Image
+            {
+                Valid = true,
+                UserName = user.NormalizedEmail,
+                Caption = imageView.Caption,
+                Description = imageView.Description,
+                DateTaken = imageView.DateTaken,
+                UserId = user.Id,
+                Approved = true // Assuming you want to set it as approved by default
+            };
 
-            logger.LogDebug("...saving image file on disk....");
+            // Save image metadata to the database
+            image.Id = await imageStorage.SaveImageInfoAsync(image);
+            if (image.Id == null)
+            {
+                ViewBag.Message = "There was an error saving the image metadata.";
+                return View(imageView);
+            }
 
-            // TODO save image file on disk
+            // Save the image file to blob storage
+            try
+            {
+                await imageStorage.SaveImageFileAsync(imageView.ImageFile, user.Id, image.Id);
+                logger.LogDebug("Image file saved successfully.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Error saving image file: {ex.Message}");
+                // Handle the file saving error appropriately
+                // For example, you could delete the metadata that was saved since the file save failed
+                await imageStorage.RemoveImageAsync(image);
+                ViewBag.Message = "There was an error saving the image file.";
+                return View(imageView);
+            }
 
-            logger.LogDebug("....forwarding to the details page, image Id = "+imageId);
-
-            return RedirectToAction("Details", new { UserId = user.Id, Id = imageId });
+            logger.LogDebug("....forwarding to the details page, image id = " + image.Id);
+            return RedirectToAction("Details", new { UserId = user.Id, Id = image.Id });
         }
 
         // TODO
@@ -120,7 +149,7 @@ namespace ImageSharingWithCloud.Controllers
             imageView.UserId = image.UserId;
 
             // TODO Log this view of the image
-
+            await logContext.AddLogEntryAsync(UserId, imageView.UserName, imageView);
 
             return View(imageView);
         }
@@ -250,7 +279,7 @@ namespace ImageSharingWithCloud.Controllers
             ApplicationUser user = await GetLoggedInUser();
 
             IList<Image> images = await imageStorage.GetAllImagesInfoAsync();
-            //ViewBag.UserId = user.UserId;
+            ViewBag.Username = user.UserName;
             return View(images);
         }
 
@@ -275,7 +304,25 @@ namespace ImageSharingWithCloud.Controllers
             CheckAda();
 
             // TODO list all images uploaded by the user in userView
-            return null;
+            // Fetch the ApplicationUser object for the given UserId
+            ApplicationUser user = await userManager.FindByIdAsync(Id);
+            if (user == null)
+            {
+                // Redirect or show an error if the user is not found
+                return RedirectToAction("Error", "Home", new { ErrId = "UserNotFound" });
+            }
+
+            // Fetching images uploaded by the user
+            IList<Image> images = await imageStorage.GetImageInfoByUserAsync(user);
+            if (images == null || images.Count == 0)
+            {
+                // Handle the case where no images are found
+                ViewBag.Message = "No images found for the selected user.";
+                //return View("ListByUser", new List<Image>());
+            }
+            ViewBag.Username = user.UserName;
+            // Return the view with the list of images
+            return View("ListAll", images); ;
             // End TODO
 
         }

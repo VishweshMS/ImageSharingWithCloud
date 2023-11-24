@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
+using System.Data;
 
 namespace ImageSharingWithCloud.Controllers
 {
@@ -58,6 +59,7 @@ namespace ImageSharingWithCloud.Controllers
                 if (result.Succeeded)
                 {
                     logger.LogDebug("...registration succeeded.");
+                    result = await userManager.AddToRoleAsync(user, "User");
                     await signInManager.SignInAsync(user, false);
                     return RedirectToAction("Index", "Home", new { UserName = model.Email });
                 }

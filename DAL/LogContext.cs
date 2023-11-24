@@ -20,15 +20,13 @@ namespace ImageSharingWithCloud.DAL
         {
             this.logger = logger;
 
-            Uri logTableServiceUri = null;
-            string logTableName = null;
+            
             /*
              * TODO Get the table service URI and table name.
              */
             string uri = configuration[StorageConfig.LogEntryDbUri];
-            logTableServiceUri = new Uri(uri);
-
-            logTableName = configuration[StorageConfig.LogEntryDbTable];
+            Uri logTableServiceUri = new Uri(uri);
+            string logTableName = configuration[StorageConfig.LogEntryDbTable];
             logger.LogInformation("Looking up Storage URI... ");
 
 
@@ -80,13 +78,12 @@ namespace ImageSharingWithCloud.DAL
             if (todayOnly)
             {
                 var today = DateTime.UtcNow.Date;
-                return tableClient.QueryAsync<LogEntry>(logEntry =>
-                    logEntry.Timestamp.HasValue &&
-                    logEntry.Timestamp.Value.UtcDateTime.Date == today);
-            
-            // TODO just return logs for today
+                string filter = TableClient.CreateQueryFilter($"Timestamp ge {today:O} and Timestamp lt {today.AddDays(1):O}");
+                return tableClient.QueryAsync<LogEntry>(filter);
 
-        }
+                // TODO just return logs for today
+
+            }
             else
             {
                 return tableClient.QueryAsync<LogEntry>(logEntry => true);
