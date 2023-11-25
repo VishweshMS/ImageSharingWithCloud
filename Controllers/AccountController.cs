@@ -208,9 +208,8 @@ namespace ImageSharingWithCloud.Controllers
             {
                 ApplicationUser user = await userManager.FindByIdAsync(userItem.Value);
 
-                // Need to reset user name in view model before returning to user, it is not posted back#pragma warning disable CS8602 // Dereference of a possibly null reference.
                 userItem.Text = user.UserName;
-//#pragma warning restore CS8602 // Dereference of a possibly null reference.
+
 
                 if (user.Active && !userItem.Selected)
                 {
