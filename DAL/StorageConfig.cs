@@ -9,9 +9,9 @@ namespace ImageSharingWithCloud.DAL
         */
         public const string ApplicationDbConnString = "Data:ApplicationDb:ConnectionString";
 
-        public const string ApplicationDbUser = "Credentials:ApplicationDb:User";
+        public const string ApplicationDbUser = "Data:ApplicationDb:User";
 
-        public const string ApplicationDbPassword = "Credentials:ApplicationDb:Password";
+        public const string ApplicationDbPassword = "Data:ApplicationDb:Password";
 
         public const string ApplicationDbDatabase = "Data:ApplicationDb:Database";
 
@@ -22,7 +22,7 @@ namespace ImageSharingWithCloud.DAL
 
         public const string ImageDbAccountName = "Data:ImageDb:AccountName";
 
-        public const string ImageDbAccessKey = "Credentials:ImageDb:AccessKey";
+        public const string ImageDbAccessKey = "Data:ImageDb:AccessKey";
 
         public const string ImageDbDatabase = "Data:ImageDb:Database";
 
@@ -35,7 +35,7 @@ namespace ImageSharingWithCloud.DAL
 
         public const string ImageStorageAccountName = "Data:ImageStorage:AccountName";
 
-        public const string ImageStorageAccessKey = "Credentials:ImageStorage:AccessKey";
+        public const string ImageStorageAccessKey = "Data:ImageStorage:AccessKey";
 
         public const string ImageStorageContainer = "Data:ImageStorage:Container";
 
@@ -46,7 +46,7 @@ namespace ImageSharingWithCloud.DAL
 
         public const string LogEntryDbAccountName = "Data:LogEntryDb:AccountName";
 
-        public const string LogEntryDbAccessKey = "Credentials:LogEntryDb:AccessKey";
+        public const string LogEntryDbAccessKey = "Data:LogEntryDb:AccessKey";
 
         public const string LogEntryDbTable = "Data:LogEntryDb:Table";
 
