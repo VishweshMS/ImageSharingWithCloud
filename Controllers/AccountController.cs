@@ -243,7 +243,7 @@ namespace ImageSharingWithCloud.Controllers
         }
 
         // TODO
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> DoLogout()
         {
             CheckAda();
