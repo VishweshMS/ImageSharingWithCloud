@@ -52,7 +52,7 @@ if (builder.Environment.IsProduction())
     else
     {
         Uri vaultUri = new Uri(vault);
-        builder.Configuration.AddAzureKeyVault(vaultUri, new DefaultAzureCredential());
+        //builder.Configuration.AddAzureKeyVault(vaultUri, new DefaultAzureCredential());
     }
 }
 
