@@ -54,4 +54,4 @@ jobs:
           app-name: 'ImageSharing526'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_05AFE15DB330430FB000ECEE8F583628 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B05A666C8D544A2D92B216AA383FA91A }}
