@@ -4,6 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>warnings</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	<AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <UserSecretsId>aspnet-ImageSharingWithCloud-8a2c73ff-bd8a-4ad1-9aba-723f013a6428</UserSecretsId>
   </PropertyGroup>
 
