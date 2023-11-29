@@ -41,7 +41,7 @@ builder.Logging.AddAzureWebAppDiagnostics();
 
 /*
  * If in production mode, add secret access keys that will be stored in Azure Key Vault.
- */
+ 
 if (builder.Environment.IsProduction())
 {
     string vault = builder.Configuration[StorageConfig.KeyVaultUri];
@@ -54,7 +54,7 @@ if (builder.Environment.IsProduction())
         Uri vaultUri = new Uri(vault);
         //builder.Configuration.AddAzureKeyVault(vaultUri, new DefaultAzureCredential());
     }
-}
+}*/
 
 /*
  * Connection string for SQL database; append credentials if present (from Azure Vault).
