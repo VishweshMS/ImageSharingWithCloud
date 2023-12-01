@@ -5,10 +5,15 @@
 @{
     ViewBag.Title = "Image Details";
 }
-
+<style>
+    .fixedSizeImage {
+        width: 300px;
+        height: auto;
+    }
+</style>
 <h2>@ViewBag.Title</h2>
 
-<p><img src="@Model.Uri" /></p>
+<p><img src="@Model.Uri" class="fixedSizeImage" /></p>
 
 <p>Image id: @Model.Id</p>
 
